@@ -12,6 +12,7 @@ import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
+
   constructor(private router: Router, private toastr: ToastrService) {}
   intercept(
     req: HttpRequest<any>,
@@ -19,6 +20,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError((err) => {
+        console.log(err)
         switch (err.status) {
           case 400:
             if (err.error.errors) {
@@ -39,7 +41,9 @@ export class ErrorInterceptor implements HttpInterceptor {
             break;
           case 401:
             this.toastr.error(
-              err.statusText == 'OK' ? err.error ||'Unauthorised' : err.statusText,
+              err.statusText == 'OK'
+                ? err.error || 'Unauthorised'
+                : err.statusText,
               err.status
             );
             break;
