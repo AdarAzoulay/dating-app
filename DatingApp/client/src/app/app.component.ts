@@ -17,9 +17,7 @@ export class AppComponent {
   ngOnInit(): void{ //happening just 1 time when the components uploading
     this.setCurrentUser();
   }
-  // rxjs is a library that allows us to do asynchronous operations
   
-
   setCurrentUser(){
     const userFromLS:any = localStorage.getItem('user');
     const user : User = JSON.parse(userFromLS);
