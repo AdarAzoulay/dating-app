@@ -14,7 +14,7 @@
     border-top: none;
 }
 
-/*::ng-deep will break thou the encapsulation and effect nested components */
+/*::ng-deep will break throu the encapsulation and effect nested components */
 ::ng-deep span {
     font-size: larger;
 }

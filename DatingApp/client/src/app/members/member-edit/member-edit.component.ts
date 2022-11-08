@@ -1,16 +1,22 @@
+import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TimeagoModule } from 'ngx-timeago';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs/operators';
 import { Member } from 'src/app/models/member';
 import { User } from 'src/app/models/user';
 import { AccountService } from 'src/app/services/account.service';
 import { MembersService } from 'src/app/services/member.service';
+import { PhotoEditorComponent } from '../photo-editor/photo-editor.component';
 
 @Component({
   selector: 'app-member-edit',
   templateUrl: './member-edit.component.html',
   styleUrls: ['./member-edit.component.css'],
+  standalone: true,
+  imports: [FormsModule, CommonModule, PhotoEditorComponent, TabsModule,TimeagoModule]
 })
 export class MemberEditComponent implements OnInit {
   member: Member;
