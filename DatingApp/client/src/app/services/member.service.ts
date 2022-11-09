@@ -58,6 +58,17 @@ export class MembersService {
 
   } 
 
+  addLike(username: string) {
+    const url = `${this.baseUrl}likes/${username}`;
+    return this.http.post(url, {});
+  }
+
+  getLikes(predicate: string,pageNumber: number, pageSize: number) {
+    let params = this.getPaginationHeaders(pageNumber,pageSize);
+    params = params.append('predicate',predicate);
+    return this.getPaginatedResult<Partial<Member>[]>(`${this.baseUrl}likes`,params);
+  }
+
   getMember(username: string) {
     // const member = this.members.find((x) => x.userName === username);
     // if (member !== undefined) return of(member);

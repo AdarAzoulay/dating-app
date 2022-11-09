@@ -15,17 +15,15 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    SharedModule
+    SharedModule,
   ],
   declarations: [
     MemberDetailComponent,
     MemberListComponent,
-    MemberCardComponent
   ],
   exports: [
     MemberDetailComponent,
     MemberListComponent,
-    MemberCardComponent,
     RouterModule
   ]
 })
