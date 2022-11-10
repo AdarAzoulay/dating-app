@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
     public class Seed
     {
-        public static async Task SeedUsers(DataContext context)
+        public static async Task SeedUsers(UserManager<AppUser> userManager)
         {
-            if (await context.Users.AnyAsync()) return;
+            if (await userManager.Users.AnyAsync()) return;
 
 
             var userData = await System.IO.File.ReadAllTextAsync("Data/UserSeedData.json");
@@ -26,10 +27,12 @@ namespace API.Data
                 // user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes("Pa$$w0rd"));
                 // user.PasswordSalt = hmac.Key;
 
-                context.Users.Add(user);
-            }
+                // context.Users.Add(user);
 
-            await context.SaveChangesAsync();
+                await userManager.CreateAsync(user,"Pa$$w0rd");
+            }
+            //the user manager takes care of the saving of changes to the database
+            // await context.SaveChangesAsync();
 
         }
     }

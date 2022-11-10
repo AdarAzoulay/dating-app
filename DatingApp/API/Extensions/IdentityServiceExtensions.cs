@@ -20,11 +20,11 @@ namespace API.Extensions
             services.AddIdentityCore<AppUser>(ops => {
                 ops.Password.RequireNonAlphanumeric = false;
             })
-            .AddRoles<AppRole>()
-            .AddRoleManager<RoleManager<AppRole>>()
-            .AddSignInManager<SignInManager<AppUser>>()
-            .AddRoleValidator<RoleValidator<AppRole>>()
-            .AddEntityFrameworkStores<DataContext>();
+            .AddRoles<AppRole>() //we want to use roles in our app
+            .AddRoleManager<RoleManager<AppRole>>() //need to add the role manager
+            .AddSignInManager<SignInManager<AppUser>>() //also we need the signing in manager that uses the AppUser
+            .AddRoleValidator<RoleValidator<AppRole>>() //we also need the validation of roles, to work with AppRole as the role type
+            .AddEntityFrameworkStores<DataContext>(); //and all the above need to be stored in a persistent way so add the store:
 
 
 
