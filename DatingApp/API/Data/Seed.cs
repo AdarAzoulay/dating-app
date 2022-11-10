@@ -21,10 +21,10 @@ namespace API.Data
 
             foreach (var user in users)
             {
-                using var hmac = new System.Security.Cryptography.HMACSHA512();
+                // using var hmac = new System.Security.Cryptography.HMACSHA512();
                 user.UserName = user.UserName.ToLower();
-                user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes("Pa$$w0rd"));
-                user.PasswordSalt = hmac.Key;
+                // user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes("Pa$$w0rd"));
+                // user.PasswordSalt = hmac.Key;
 
                 context.Users.Add(user);
             }

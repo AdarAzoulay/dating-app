@@ -4,23 +4,47 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using API.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<
+        AppUser,
+        AppRole,
+        int, // identified using an int
+        IdentityUserClaim<int>, // user claim will int as key
+        AppUserRole,  // user role will be mapped to the joint table
+        IdentityUserLogin<int>, // user login will int as key
+        IdentityRoleClaim<int>, // role claim will int as key
+        IdentityUserToken<int> // user token will int as key
+    >
     {
         public DataContext(DbContextOptions options) : base(options)
         {
 
         }
-        public DbSet<AppUser> Users { get; set; }
+        // public DbSet<AppUser> Users { get; set; }
         public DbSet<UserLike> Likes { get; set; }
         public DbSet<Message> Messages { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(builder); //4. first of all, do the thing that the base class does 
+            base.OnModelCreating(builder); // first of all, do the thing that the base class does 
+
+            // configure the relationship between AppUser, AppRole through many2many relationship
+            builder.Entity<AppUser>()
+                .HasMany(ur => ur.UserRoles)
+                .WithOne(aur => aur.User)
+                .HasForeignKey(aur => aur.UserId)
+                .IsRequired();
+            // and the other side of this relationship
+            builder.Entity<AppRole>()
+                .HasMany(ur => ur.UserRoles)
+                .WithOne(aur => aur.Role)
+                .HasForeignKey(aur => aur.RoleId)
+                .IsRequired();
 
             builder.Entity<UserLike>()
                 .HasKey(k => new { k.LikedUserId, k.SourceUserId });
@@ -37,7 +61,7 @@ namespace API.Data
                 .HasForeignKey(u => u.LikedUserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-                
+
 
             builder.Entity<Message>()
            .HasOne(u => u.Sender)

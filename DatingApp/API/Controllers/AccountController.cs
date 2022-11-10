@@ -32,13 +32,13 @@ namespace API.Controllers
 
             var user = _mapper.Map<AppUser>(registerDto);
 
-            using var hmac = new HMACSHA512();
+            // using var hmac = new HMACSHA512();
 
             // var user = new AppUser
             // {
                 user.UserName = registerDto.Username.ToLower();
-                user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(registerDto.Password));
-                user.PasswordSalt = hmac.Key;
+                // user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(registerDto.Password));
+                // user.PasswordSalt = hmac.Key;
             // };
 
             _context.Users.Add(user);
@@ -62,13 +62,13 @@ namespace API.Controllers
 
             // check password so using hmac todo the reverse of what we did to register
             // calculate the hash using the salt and the given password
-            using var hmac = new HMACSHA512(user.PasswordSalt);
-            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(loginDto.Password));
+            // using var hmac = new HMACSHA512(user.PasswordSalt);
+            // var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(loginDto.Password));
 
-            for (int i = 0; i < computedHash.Length; i++)
-            {
-                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid username or password");
-            }
+            // for (int i = 0; i < computedHash.Length; i++)
+            // {
+            //     if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid username or password");
+            // }
 
             return new UserDto
             {
