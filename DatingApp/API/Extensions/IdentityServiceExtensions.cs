@@ -17,7 +17,8 @@ namespace API.Extensions
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
         {
 
-            services.AddIdentityCore<AppUser>(ops => {
+            services.AddIdentityCore<AppUser>(ops =>
+            {
                 ops.Password.RequireNonAlphanumeric = false;
             })
             .AddRoles<AppRole>() //we want to use roles in our app
@@ -38,6 +39,12 @@ namespace API.Extensions
                     ValidateIssuer = false, // the api server 
                     ValidateAudience = false // the angular app 
                 };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
             });
 
             return services;

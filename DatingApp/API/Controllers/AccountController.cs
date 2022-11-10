@@ -25,7 +25,6 @@ namespace API.Controllers
         private readonly IMapper _mapper;
         public AccountController(DataContext context, ITokenService tokenService, IMapper mapper, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
-            // _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
@@ -39,26 +38,18 @@ namespace API.Controllers
 
             var user = _mapper.Map<AppUser>(registerDto);
 
-            // using var hmac = new HMACSHA512();
-
-            // var user = new AppUser
-            // {
             user.UserName = registerDto.Username.ToLower();
-            // user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(registerDto.Password));
-            // user.PasswordSalt = hmac.Key;
-            // };
-
-            // _context.Users.Add(user);
-            // await _context.SaveChangesAsync();
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded) return BadRequest(result.Errors);
 
+            var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+            if(!roleResult.Succeeded) return BadRequest(roleResult.Errors);
 
             return new UserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user),
+                Token = await _tokenService.CreateToken(user),
                 KnownAs = user.KnownAs,
                 Gender = user.Gender
             };
@@ -71,25 +62,16 @@ namespace API.Controllers
             var user = await this._userManager.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
             if (user == null) return Unauthorized("invalid username");
 
-            // check password so using hmac todo the reverse of what we did to register
-            // calculate the hash using the salt and the given password
-            // using var hmac = new HMACSHA512(user.PasswordSalt);
-            // var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(loginDto.Password));
-
-            // for (int i = 0; i < computedHash.Length; i++)
-            // {
-            //     if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid username or password");
-            // }
 
             // * this will both check the password and sign in the user
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, /*not to lock out on failure*/false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password,false);
             if (!result.Succeeded) return Unauthorized("invalid password");
 
 
             return new UserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user),
+                Token = await _tokenService.CreateToken(user),
                 PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
                 KnownAs = user.KnownAs,
                 Gender = user.Gender

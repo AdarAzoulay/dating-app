@@ -30,7 +30,6 @@ namespace API.Controllers
             _userRepository = userRepository;
             _mapper = mapper;
         }
-
         [HttpGet] // api/users
         public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
@@ -52,7 +51,6 @@ namespace API.Controllers
             );
             return Ok(users);
         }
-
         [HttpGet("{username}", Name = "GetUser")] // api/users/lisa
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
