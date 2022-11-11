@@ -42,6 +42,8 @@ namespace API.Helpers
                 opt => opt.MapFrom(            // we mapping from the Recipient photos, the one that is main
                     src => src.Recipient.Photos.FirstOrDefault(x => x.IsMain).Url));
 
+            CreateMap<DateTime,DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
+
         }
     }
 }

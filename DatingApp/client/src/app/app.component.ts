@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { User } from './models/user';
 import { AccountService } from './services/account.service';
+import { PresenceService } from './services/presence.service';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,7 @@ export class AppComponent {
   title : string = 'The dating app';
   users : any;
 
-  constructor(private http: HttpClient, private accountService : AccountService){  }
+  constructor(private presenceService: PresenceService, private accountService : AccountService){  }
 
   ngOnInit(): void{ //happening just 1 time when the components uploading
     this.setCurrentUser();
@@ -21,6 +22,9 @@ export class AppComponent {
   setCurrentUser(){
     const userFromLS:any = localStorage.getItem('user');
     const user : User = JSON.parse(userFromLS);
-    this.accountService.setCurrentUser(user);
+    if(user) {
+      this.accountService.setCurrentUser(user);
+      this.presenceService.createHubConnection(user);
+    }
   }
 }

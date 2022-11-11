@@ -6,6 +6,7 @@ using API.Data;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
+using API.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,8 @@ namespace API.Extensions
             // AddSingleton: dies (disposed) with the application (too long for service we need on the api call level)
             // AddScoped: dies(disposed) with the http request ( in this case its scoped to the request, we create it on http call (injected to the controller), most useful in Web Apps)
             // AddTransient: dies(disposed) on method finishing, created every time they are injected or requested.
+
+            services.AddSingleton<PresenceTracker>();
 
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
 

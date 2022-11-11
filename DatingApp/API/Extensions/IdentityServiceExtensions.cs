@@ -39,6 +39,27 @@ namespace API.Extensions
                     ValidateIssuer = false, // the api server 
                     ValidateAudience = false // the angular app 
                 };
+
+                option.Events = new JwtBearerEvents
+                {
+                    // * we'll configure the flow on every message event received by the hub.
+                    OnMessageReceived = context =>
+                    {
+                        // we want the token from the query string
+                        var accessToken = context.Request.Query["access_token"];
+                        // check where is this request comming to
+                        var path = context.HttpContext.Request.Path;
+                        // if the accessToken and the the message it going to "/hubs" 
+                        //  * fix 'bubs' to 'hubs' in Startup.cs
+                        //  * this path ned to match the path of the hub as we configured in Startup.cs 
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        {
+                            // we'll extract the token from the query string and place it in the context for the [authorize] attribute to use it.
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             services.AddAuthorization(options =>

@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using API.Extensions;
 using API.Middleware;
+using API.SignalR;
 
 namespace API
 {
@@ -28,9 +29,8 @@ namespace API
         public Startup(IConfiguration config)
         {
             _config = config;
-            // Configuration = configuration;
         }
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -50,6 +50,9 @@ namespace API
             services.AddCors();
 
             services.AddIdentityServices(_config);
+
+            services.AddSignalR();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,10 +70,11 @@ namespace API
 
             app.UseRouting();
 
-            app.UseCors(policy => 
+            app.UseCors(policy =>
             policy
             .AllowAnyHeader() // allow any header (like authentication related headers)
             .AllowAnyMethod() // allow any method(HTTP Verb) (like GET, POST, PUT, DELETE)
+            .AllowCredentials()  //allow sending credentials
             .WithOrigins("https://localhost:4200") // our frontend
             );
 
@@ -81,6 +85,8 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<PresenceHub>("hubs/presence");
+                endpoints.MapHub<MessageHub>("hubs/message");
             });
         }
     }

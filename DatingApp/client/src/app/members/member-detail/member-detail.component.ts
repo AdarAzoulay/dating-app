@@ -1,54 +1,74 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
+import { ActivatedRoute, Router } from '@angular/router';
+import {
+  NgxGalleryAnimation,
+  NgxGalleryImage,
+  NgxGalleryOptions,
+} from '@kolkov/ngx-gallery';
 import { TabDirective, TabsetComponent } from 'ngx-bootstrap/tabs';
 import { ToastrService } from 'ngx-toastr';
+import { take } from 'rxjs/operators';
 import { Member } from 'src/app/models/member';
 import { Message } from 'src/app/models/message';
+import { User } from 'src/app/models/user';
+import { AccountService } from 'src/app/services/account.service';
 import { MembersService } from 'src/app/services/member.service';
 import { MessageService } from 'src/app/services/message.service';
+import { PresenceService } from 'src/app/services/presence.service';
 
 @Component({
   selector: 'app-member-detail',
   templateUrl: './member-detail.component.html',
-  styleUrls: ['./member-detail.component.css']
+  styleUrls: ['./member-detail.component.css'],
 })
 export class MemberDetailComponent implements OnInit {
-  @ViewChild('memberTabs', {static:true}) memberTabs: TabsetComponent;
+  @ViewChild('memberTabs', { static: true }) memberTabs: TabsetComponent;
 
-  messages:Message[] = [];
+  messages: Message[] = [];
   member: Member;
-  galleryOptions: NgxGalleryOptions[]
-  galleryImages: NgxGalleryImage[]
+  galleryOptions: NgxGalleryOptions[];
+  galleryImages: NgxGalleryImage[];
 
   activeTab: TabDirective;
+  user: User;
 
-  constructor(    private toastr: ToastrService
-,    private route: ActivatedRoute, private membersService: MembersService,private messageService: MessageService) {}
+  constructor(
+    private toastr: ToastrService,
+    private route: ActivatedRoute,
+    private membersService: MembersService,
+    private messageService: MessageService,
+    public presence: PresenceService,
+    private accountService: AccountService,
+    private router: Router,
 
-  ngOnInit(): void {
-    this.route.data.subscribe(data => {
-      this.member = data['member'];
-    });
-
-    this.route.queryParams.subscribe(params => {
-      params.tab ? this.selectTab(params.tab) : this.selectTab(0);
-    });
-
-
-    this.galleryOptions = [{
-      width: '500px',
-      height: '500px',
-      imagePercent: 100,
-      thumbnailsColumns: 4,
-      imageAnimation: NgxGalleryAnimation.Slide,
-      preview: false
-    }]
-
-    this.galleryImages = this.getImages();
+  ) {
+    this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user)
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
 
   }
 
+  ngOnInit(): void {
+    this.route.data.subscribe((data) => {
+      this.member = data['member'];
+    });
+
+    this.route.queryParams.subscribe((params) => {
+      params.tab ? this.selectTab(params.tab) : this.selectTab(0);
+    });
+
+    this.galleryOptions = [
+      {
+        width: '500px',
+        height: '500px',
+        imagePercent: 100,
+        thumbnailsColumns: 4,
+        imageAnimation: NgxGalleryAnimation.Slide,
+        preview: false,
+      },
+    ];
+
+    this.galleryImages = this.getImages();
+  }
 
   getImages(): NgxGalleryImage[] {
     const imageUrls = [];
@@ -56,7 +76,7 @@ export class MemberDetailComponent implements OnInit {
       imageUrls.push({
         small: photo?.url,
         medium: photo?.url,
-        big: photo?.url
+        big: photo?.url,
       });
     }
     return imageUrls;
@@ -66,24 +86,32 @@ export class MemberDetailComponent implements OnInit {
     this.memberTabs.tabs[tabId].active = true;
   }
 
-  onTabActivated(data: TabDirective){
+  onTabActivated(data: TabDirective) {
     this.activeTab = data;
-    if(this.activeTab.heading === 'Messages'  && this.messages.length === 0) {
-      this.loadMessages();
+    if (this.activeTab.heading === 'Messages' && this.messages.length === 0) {
+      // this.loadMessages(); //* we'll change this because we'll get those messages from SignalR hub
+      this.messageService.createHubConnection(this.user, this.member.userName)
+    }
+    else {
+      this.messageService.stopHubConnection();
     }
   }
 
+  ngOnDestroy(): void {
+    this.messageService.stopHubConnection();
+  }
+  
   loadMessages() {
-    this.messageService.getMessageThread(this.member.userName).subscribe(messages => {
-      this.messages = messages;
-    })
+    this.messageService
+      .getMessageThread(this.member.userName)
+      .subscribe((messages) => {
+        this.messages = messages;
+      });
   }
 
-  addLike(member:Member){
-    this.membersService.addLike(member.userName).subscribe(
-      ()=>{
-        this.toastr.success(`You have liked: ${member.knownAs}`);
-      }
-    )
+  addLike(member: Member) {
+    this.membersService.addLike(member.userName).subscribe(() => {
+      this.toastr.success(`You have liked: ${member.knownAs}`);
+    });
   }
 }

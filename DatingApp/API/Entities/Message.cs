@@ -23,7 +23,7 @@ namespace API.Entities
 
         public string Content { get; set; }
         public DateTime? DateRead { get; set; } //optional => if not been read
-        public DateTime MessageSent { get; set; } = DateTime.Now; // on creation of the message
+        public DateTime MessageSent { get; set; } = DateTime.UtcNow; // on creation of the message
 
         public bool SenderDeleted { get; set; }
         public bool RecipientDeleted { get; set; }
