@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
 import { TabDirective, TabsetComponent } from 'ngx-bootstrap/tabs';
+import { ToastrService } from 'ngx-toastr';
 import { Member } from 'src/app/models/member';
 import { Message } from 'src/app/models/message';
 import { MembersService } from 'src/app/services/member.service';
@@ -22,7 +23,8 @@ export class MemberDetailComponent implements OnInit {
 
   activeTab: TabDirective;
 
-  constructor(private route: ActivatedRoute, private membersService: MembersService,private messageService: MessageService) {}
+  constructor(    private toastr: ToastrService
+,    private route: ActivatedRoute, private membersService: MembersService,private messageService: MessageService) {}
 
   ngOnInit(): void {
     this.route.data.subscribe(data => {
@@ -77,4 +79,11 @@ export class MemberDetailComponent implements OnInit {
     })
   }
 
+  addLike(member:Member){
+    this.membersService.addLike(member.userName).subscribe(
+      ()=>{
+        this.toastr.success(`You have liked: ${member.knownAs}`);
+      }
+    )
+  }
 }

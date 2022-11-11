@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { TimeagoModule } from 'ngx-timeago';
 import { MemberCardComponent } from '../members/member-card/member-card.component';
 import { RouterModule } from '@angular/router';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { RouterModule } from '@angular/router';
     TabsModule.forRoot(),
     NgxGalleryModule,
     BsDropdownModule.forRoot(),
+    ModalModule.forRoot(),//1. add this
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right',
       
@@ -35,6 +37,7 @@ import { RouterModule } from '@angular/router';
   ],
   declarations: [MemberCardComponent],
   exports: [
+    ModalModule,
     BsDropdownModule,
     ToastrModule,
     TabsModule,

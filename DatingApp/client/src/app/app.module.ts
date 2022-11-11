@@ -21,9 +21,15 @@ import { SharedModule } from './modules/shared.module';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { TextInputComponent } from './forms/text-input/text-input.component';
 import { DateInputComponent } from './forms/date-input/date-input.component';
+import { HasRoleDirective } from './directives/has-role.directive';
+import { UserManagementComponent } from './admin/user-management/user-management.component';
+import { PhotoManagementComponent } from './admin/photo-management/photo-management.component';
+import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
+import { RolesModalComponent } from './modals/roles-modal/roles-modal.component';
 
 @NgModule({
   declarations: [
+    HasRoleDirective,
     AppComponent,
     NavComponent,
     HomeComponent,
@@ -35,7 +41,10 @@ import { DateInputComponent } from './forms/date-input/date-input.component';
     ServerErrorComponent,
     TextInputComponent,
     DateInputComponent,
-
+    AdminPanelComponent,
+    UserManagementComponent,
+    PhotoManagementComponent,
+    RolesModalComponent
   ],
   imports: [
     BrowserModule,
